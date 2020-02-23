@@ -13,7 +13,6 @@ yarn
 
 `yarn build`
 
-
 ## Architecture
 
 ```
@@ -22,9 +21,9 @@ yarn
 └───posts
 ```
 
-* `assets`: contains all the images (we don't care about CSS or JS)
-* `layouts`: contains the layouts, see the different layouts below
-* `posts`: contains your posts content. The title of the file will be the slug
+-   `assets`: contains all the images (we don't care about CSS or JS)
+-   `layouts`: contains the layouts, see the different layouts below
+-   `posts`: contains your posts content. The title of the file will be the slug
 
 ## Layouts
 
@@ -40,7 +39,7 @@ A small [modern css reset](https://github.com/hankchizljaw/modern-css-reset) wil
 
 List of supported template files:
 
-* `post.html`
+-   `post.html`
 
 More to come as the project needs it.
 
@@ -50,9 +49,9 @@ You can see this project as a very tiny little micro compiler that just scan tem
 
 ## TODO
 
-* [_] Moare layouts (specifically index with list of posts)
-* [_] Process assets
-* [_] Mess around with typescript maybe
-* [_] Make it agnostic and configurable maybe
-* [_] Add feedback on the CLI
-* [_] Add a develop mode maybe
+-   [ ] Moare layouts (specifically index with list of posts)
+-   [ ] Process assets
+-   [ ] Mess around with typescript maybe
+-   [ ] Make it agnostic and configurable maybe
+-   [ ] Add feedback on the CLI
+-   [ ] Add a develop mode maybe
