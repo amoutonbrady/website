@@ -1,6 +1,6 @@
-# Blog builder based on static file
+# Blog generator based on static file
 
-Minimal, experimental & opinionated static blog builder
+Minimal, experimental & opinionated static blog generator
 
 ## Installation
 
