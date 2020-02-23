@@ -5,7 +5,7 @@ Minimal, experimental & opinionated static blog builder
 ## Installation
 
 ```bash
-git clone yati yata
+git clone https://github.com/amoutonbrady/sbg
 yarn
 ```
 
