@@ -1,0 +1,19 @@
+{
+  "name": "amoutonbrady",
+  "scripts": {
+    "build": "node -r esm main"
+  },
+  "dependencies": {
+    "esm": "^3.2.25",
+    "fs-extra": "^8.1.0",
+    "gray-matter": "^4.0.2",
+    "html-minifier": "^4.0.0",
+    "marked": "^0.8.0",
+    "modern-css-reset": "^1.1.0",
+    "nunjucks": "^3.2.0",
+    "shiki": "^0.1.6"
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1"
+  }
+}
