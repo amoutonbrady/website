@@ -1,5 +1,5 @@
 import marked from 'marked';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import * as shiki from 'shiki';
 import njk from 'nunjucks';
 import matter from 'gray-matter';
@@ -18,18 +18,21 @@ import {
 } from 'fs-extra';
 
 // Global env
-const njkRenderer = new njk.Environment();
+const njkRenderer = njk.configure(['partials']);
 
 // Bunch of utils
-const [postsDir, distDir, layoutDir, assetsDir] = [
+const [postsDir, pagesDir, distDir, layoutDir, assetsDir] = [
 	'posts',
+	'pages',
 	'dist',
 	'layouts',
 	'assets',
 ].map(dir => resolve(__dirname, dir));
 
 const resolvePost = post => resolve(postsDir, post);
-const resolveDist = path => resolve(distDir, path);
+const resolvePage = page => resolve(pagesDir, page);
+const resolveDist = (...paths) =>
+	resolve(distDir, ...paths.map(path => path.replace(/^\//, '')));
 const resolveLayout = layout => resolve(layoutDir, layout);
 const cssResetPath = resolve(
 	__dirname,
@@ -80,16 +83,24 @@ async function processMarkdown(path) {
 	return [parsed, data];
 }
 
-async function generatePosts(postsPath, layout) {
+async function generatePosts() {
+	// Get all the blog posts
+	const postsPath = await readdir(postsDir);
+
+	// Get the layout for the blog posts
+	const blogLayout = resolveLayout('post.html');
+	const layout = await readFile(blogLayout, { encoding: 'utf-8' });
+
 	// If no blog posts, bail early
 	if (!postsPath || !postsPath.length) return;
+
+	const posts = [];
 
 	for (const postPath of postsPath) {
 		// Filter .gitkeep
 		if (postPath.startsWith('.')) continue;
 
-		// Generate the filename by replacing the extension with html
-		const filename = `blog/${postPath.replace(/md/i, 'html')}`;
+		const url = `/blog/${postPath.replace(/.md/i, '')}`;
 
 		const postFile = resolvePost(postPath);
 
@@ -97,18 +108,66 @@ async function generatePosts(postsPath, layout) {
 		const [createdAt, updatedAt] = await extractStats(postFile);
 
 		// Compile the template
-		const compiled = njkRenderer.renderString(layout, {
-			content,
+		const metadata = {
+			...data,
 			createdAt,
 			updatedAt,
-			...data,
-		});
+			content,
+			url,
+		};
+
+		const compiled = njkRenderer.renderString(layout, metadata);
 
 		// Write the file to the dist
-		await outputFile(resolveDist(filename), patchTemplate(compiled), {
-			encoding: 'utf-8',
-		});
+		await outputFile(
+			resolveDist(url, 'index.html'),
+			patchTemplate(compiled),
+			{
+				encoding: 'utf-8',
+			},
+		);
+
+		posts.push(metadata);
 	}
+
+	return posts;
+}
+
+async function generateRoutes(posts) {
+	// Get all the blog posts
+	const pages = [];
+	const pagesPath = await readdir(pagesDir);
+
+	// If no blog posts, bail early
+	if (!pagesPath || !pagesPath.length) return;
+
+	for (const pagePath of pagesPath) {
+		// Filter .gitkeep
+		if (pagePath.startsWith('.')) continue;
+		const pageFile = resolvePage(pagePath);
+
+		// Get the layout for the blog posts
+		const content = await readFile(pageFile, { encoding: 'utf-8' });
+		const url = `/${pagePath.replace(/(index)?.html/i, '')}`;
+
+		const metadata = {
+			posts,
+		};
+
+		const compiled = njkRenderer.renderString(content, metadata);
+
+		await outputFile(
+			resolveDist(url, 'index.html'),
+			patchTemplate(compiled),
+			{
+				encoding: 'utf-8',
+			},
+		);
+
+		pages.push(content);
+	}
+
+	return pages;
 }
 
 async function processConfig(config) {
@@ -148,14 +207,8 @@ async function main() {
 		},
 	});
 
-	// Get all the blog posts
-	const posts = await readdir(postsDir);
-
-	// Get the layout for the blog posts
-	const blogLayout = resolveLayout('post.html');
-	const template = await readFile(blogLayout, { encoding: 'utf-8' });
-
-	await generatePosts(posts, template);
+	const posts = await generatePosts();
+	await generateRoutes(posts);
 }
 
 // Start the small compiler

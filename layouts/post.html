@@ -1,22 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>{{ title }}</title>
-	</head>
+{% extends "default.html" %} 
 
-	<body>
-		<header>{{ title }}</header>
-		<p>
-			<span>posted on:</span>
-			<time>{{ createdAt | date }}</time>
-		</p>
+{% block title %} {{ title }} {% endblock %} 
 
-		<main>
-			{{ content | safe }}
-		</main>
+{% block content %}
+	<header>{{ title }}</header>
 
-		<footer>Hello footer!</footer>
-	</body>
-</html>
+	<p>
+		<span>posted on:</span>
+		<time>{{ createdAt | date }}</time>
+	</p>
+
+	<main>
+		{{ content | safe }}
+	</main>
+
+	<footer>Hello footer!</footer>
+{% endblock %}
