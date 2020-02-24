@@ -7,9 +7,15 @@
 	</head>
 
 	<body>
-		<header>I'm not sure what you are asking me</header>
+		<header>{{ title }}</header>
+		<p>
+			<span>posted on:</span>
+			<time>{{ createdAt | date }}</time>
+		</p>
 
-		{{ content | safe }}
+		<main>
+			{{ content | safe }}
+		</main>
 
 		<footer>Hello footer!</footer>
 	</body>
