@@ -13,8 +13,10 @@
 		"url": "https://github.com/amoutonbrady/sbg"
 	},
 	"readme": "README.md",
+	"license": "MIT",
 	"scripts": {
-		"build": "node -r esm main"
+		"build": "node -r esm main",
+		"serve": "serve dist"
 	},
 	"dependencies": {
 		"esm": "^3.2.25",
@@ -27,6 +29,7 @@
 		"shiki": "^0.1.6"
 	},
 	"devDependencies": {
-		"prettier": "^1.19.1"
+		"prettier": "^1.19.1",
+		"serve": "^11.3.0"
 	}
 }
