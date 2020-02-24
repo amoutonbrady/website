@@ -1,7 +1,7 @@
 import marked from 'marked';
 import { resolve } from 'path';
 import * as shiki from 'shiki';
-import template from 'nunjucks';
+import njk from 'nunjucks';
 import matter from 'gray-matter';
 import { minify } from 'html-minifier';
 
@@ -14,7 +14,11 @@ import {
 	copy,
 	outputFile,
 	readFileSync,
+	stat,
 } from 'fs-extra';
+
+// Global env
+const njkRenderer = new njk.Environment();
 
 // Bunch of utils
 const [postsDir, distDir, layoutDir, assetsDir] = [
@@ -32,6 +36,14 @@ const cssResetPath = resolve(
 	'node_modules/modern-css-reset/dist/reset.min.css',
 );
 const cssReset = readFileSync(cssResetPath, { encoding: 'utf-8' });
+
+async function resolveConfig(configName = 'config.js') {
+	const configPath = resolve(__dirname, configName);
+	const confExists = await exists(configPath);
+	if (!confExists) return;
+
+	return (await import(configPath)).default;
+}
 
 function patchTemplate(template) {
 	// Minify the html & inject the small CSS
@@ -51,6 +63,23 @@ function patchTemplate(template) {
 	);
 }
 
+async function extractStats(path) {
+	const { birthtime, mtime } = await stat(path);
+
+	return [birthtime, mtime].map(d => new Date(d));
+}
+
+async function processMarkdown(path) {
+	// Get the file content
+	const text = await readFile(path, { encoding: 'utf-8' });
+
+	// Parse the front matter & then the markdown
+	const { content, data } = matter(text);
+	const parsed = marked.parse(content);
+
+	return [parsed, data];
+}
+
 async function generatePosts(postsPath, layout) {
 	// If no blog posts, bail early
 	if (!postsPath || !postsPath.length) return;
@@ -62,18 +91,16 @@ async function generatePosts(postsPath, layout) {
 		// Generate the filename by replacing the extension with html
 		const filename = `blog/${postPath.replace(/md/i, 'html')}`;
 
-		// Get the file content
-		const text = await readFile(resolvePost(postPath), {
-			encoding: 'utf-8',
-		});
+		const postFile = resolvePost(postPath);
 
-		// Parse the front matter & then the markdown
-		const { content, data } = matter(text);
-		const rendered = marked.parse(content);
+		const [content, data] = await processMarkdown(postFile);
+		const [createdAt, updatedAt] = await extractStats(postFile);
 
 		// Compile the template
-		const compiled = template.renderString(layout, {
-			content: rendered,
+		const compiled = njkRenderer.renderString(layout, {
+			content,
+			createdAt,
+			updatedAt,
 			...data,
 		});
 
@@ -84,9 +111,22 @@ async function generatePosts(postsPath, layout) {
 	}
 }
 
+async function processConfig(config) {
+	if (!config) return;
+
+	for (const [name, filterHandler] of Object.entries(config.filters)) {
+		njkRenderer.addFilter(name, filterHandler);
+	}
+
+	return njkRenderer;
+}
+
 async function main() {
 	// Rewrite the dist folder on each compilation
 	if (await exists(distDir)) await remove(distDir);
+
+	const customConfig = await resolveConfig();
+	processConfig(customConfig);
 
 	// Create the dist folder
 	await mkdirp(distDir);
