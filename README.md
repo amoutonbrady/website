@@ -37,8 +37,6 @@ Any data defined in the [front matter](https://jekyllrb.com/docs/front-matter/) 
 
 The `content` variable is the compiled markdown.
 
-A small [modern css reset](https://github.com/hankchizljaw/modern-css-reset) will be automatically injected in the head.
-
 List of supported template files:
 
 -   `post.html`

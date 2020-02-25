@@ -52,11 +52,6 @@ const resolvePage = page => resolve(pagesDir, page);
 const resolveDist = (...paths) =>
 	resolve(distDir, ...paths.map(path => path.replace(/^\//, '')));
 const resolveLayout = layout => resolve(layoutDir, layout);
-const cssResetPath = resolve(
-	__dirname,
-	'node_modules/modern-css-reset/dist/reset.min.css',
-);
-const cssReset = readFileSync(cssResetPath, { encoding: 'utf-8' });
 
 /* Prepend the given path segment */
 const prependPathSegment = pathSegment => location =>
@@ -90,20 +85,17 @@ async function resolveConfig(configName = 'config.js') {
 
 function patchTemplate(template) {
 	// Minify the html & inject the small CSS
-	return minify(
-		template.replace(/<\/head>/gim, `<style>${cssReset}</style></head>`),
-		{
-			removeComments: true,
-			collapseWhitespace: true,
-			removeOptionalTags: true,
-			removeRedundantAttributes: true,
-			removeScriptTypeAttributes: true,
-			removeTagWhitespace: true,
-			useShortDoctype: true,
-			minifyCSS: true,
-			minifyJS: true,
-		},
-	);
+	return minify(template, {
+		removeComments: true,
+		collapseWhitespace: true,
+		removeOptionalTags: true,
+		removeRedundantAttributes: true,
+		removeScriptTypeAttributes: true,
+		removeTagWhitespace: true,
+		useShortDoctype: true,
+		minifyCSS: true,
+		minifyJS: true,
+	});
 }
 
 async function extractStats(path) {
