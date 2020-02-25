@@ -1,14 +1,14 @@
 {% extends "default.html" %} 
 
-{% block title %} Fucking homepage {% endblock %} 
+{% block title %} Alexandre Mouton-Brady {% endblock %} 
 
 {% block content %}
-	<header>Welcome to the homepage</header>
 
-	<main>
-		{% for post in posts %}
+	<main class="flex items-center justify-center h-screen text-green-400 bg-gray-900">
+		{# {% for post in posts %}
 		<a href="{{ post.url }}">{{ post.title }}</a>
-		{% endfor %}
+		{% endfor %} #}
+		<h1 class="font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl">Hello, my name is Alexandre.</h1>
 	</main>
 
 {% endblock %}
