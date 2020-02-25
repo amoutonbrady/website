@@ -59,9 +59,18 @@ You can see this project as a very tiny little micro compiler that just scan tem
 
 ## TODO
 
+### Initial TODOS
+
 -   [x] ~~Moare layouts (specifically index with list of posts)~~ Implemented as "pages"
 -   [x] ~~Process assets~~ Only for JS (minification) & CSS (dead code removal, minification, autoprefixer, tailwind)
--   [ ] Mess around with typescript maybe
+-   [ ] ~~Mess around with typescript maybe~~ Delayed for later
 -   [x] ~~Make it agnostic and configurable maybe~~ Sort of implemented it (only njk filters for now)
--   [ ] Add feedback on the CLI
+-   [x] ~~Add feedback on the CLI~~ Added some more context during build
 -   [x] ~~Add a develop mode maybe~~ Add a "serve" command to serve the dist, still to build manually for now
+
+### 02/25/2020
+
+-   [ ] Inject a `pages` variable in the pages files to be able to make a navigation
+-   [ ] Add a filter or something to make some sort of pagination
+-   [ ] Fix perfs issues if possible...
+-   [ ] Mess around with typescript maybe, could be useful for the config

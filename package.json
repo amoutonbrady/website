@@ -21,6 +21,7 @@
 	"dependencies": {
 		"@fullhuman/postcss-purgecss": "^2.0.6",
 		"autoprefixer": "^9.7.4",
+		"consola": "^2.11.3",
 		"cssnano": "^4.1.10",
 		"esm": "^3.2.25",
 		"fs-extra": "^8.1.0",
@@ -29,6 +30,7 @@
 		"marked": "^0.8.0",
 		"modern-css-reset": "^1.1.0",
 		"nunjucks": "^3.2.0",
+		"ora": "^4.0.3",
 		"postcss": "^7.0.27",
 		"shiki": "^0.1.6",
 		"tailwindcss": "^1.2.0",

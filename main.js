@@ -5,6 +5,10 @@ import njk from 'nunjucks';
 import matter from 'gray-matter';
 import { minify } from 'html-minifier';
 
+// Logging stuff
+import log from 'consola';
+import ora from 'ora';
+
 import {
 	readFile,
 	readdir,
@@ -12,12 +16,11 @@ import {
 	mkdirp,
 	remove,
 	statSync,
-	copy,
 	outputFile,
 	readFileSync,
 	readdirSync,
 	stat,
-	move,
+	copy,
 } from 'fs-extra';
 
 // CSS processing
@@ -32,6 +35,7 @@ import terser from 'terser';
 
 // Global env
 const njkRenderer = njk.configure(['layouts']);
+const loader = ora();
 
 // Bunch of utils
 const [postsDir, pagesDir, distDir, layoutDir] = [
@@ -240,7 +244,8 @@ async function processAndCopyAssets() {
 	);
 
 	for (const filePath of files) {
-		console.log(`\nProcessing ${filePath}`);
+		loader.clear();
+		log.info(`Processing ${filePath}`);
 
 		const extension = extname(filePath);
 		const file = await readFile(filePath, { encoding: 'utf-8' });
@@ -254,8 +259,9 @@ async function processAndCopyAssets() {
 				content = await processJSFiles(file);
 				break;
 			default:
-				console.log(`no transformer for file type ${extension}`);
-				move(filePath, resolveDist(filePath));
+				loader.clear();
+				log.info(`No transformer for file type ${extension}`);
+				copy(filePath, resolveDist(filePath));
 				continue;
 		}
 
@@ -264,15 +270,24 @@ async function processAndCopyAssets() {
 }
 
 async function main() {
+	log.info('Starting the whole thing');
+
+	loader.start('Cleaning up the dist folder if it exists...');
 	// Rewrite the dist folder on each compilation
 	if (await exists(distDir)) await remove(distDir);
+	loader.succeed();
 
+	loader.start('Resolving & processing the configuration...');
 	const config = await resolveConfig();
 	await processConfig(config);
+	loader.succeed();
 
+	loader.start('Creating the dist folder...');
 	// Create the dist folder
 	await mkdirp(distDir);
+	loader.succeed();
 
+	loader.start('Setting up the required config for the templates...');
 	// Setup some highlight stuff for the markdown
 	const hl = await shiki.getHighlighter({
 		theme: 'nord',
@@ -283,15 +298,24 @@ async function main() {
 			return hl.codeToHtml(code, lang);
 		},
 	});
+	loader.succeed();
 
+	loader.start('Processing the blog posts...');
 	// Process the posts folder
 	const posts = await generatePosts();
+	loader.succeed(`${posts.length} posts processed successfully`);
 
+	loader.start('Processing the pages...');
 	// Process the pages folder
-	await generateRoutes(posts);
+	const pages = await generateRoutes(posts);
+	loader.succeed(`${pages.length} pages processed successfully`);
 
+	loader.start('Processing the assets...');
 	// Process and mirror the assets directory to the dist folder
 	await processAndCopyAssets();
+	loader.succeed('All assets processed successfully');
+
+	log.success(`Build successful!`);
 }
 
 // Start the small compiler
