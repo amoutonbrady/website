@@ -4,12 +4,55 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{% block tile %} Hello world! {% endblock %}</title>
-		<link rel="stylesheet" href="/assets/css/main.css">
+		<meta name="description" content="Hello, World! I'm Alexandre. This is my site.">
+		<meta name="robots" content="index,follow">
+		<meta name="google" content="notranslate">
+		<meta name="generator" content="sbg">
+		<meta name="rating" content="General">
+		<meta name="theme-color" content="#1a202c">
+		<link rel="icon" sizes="192x192" href="/assets/images/icons/icon-192x192.png">
+		<link rel="apple-touch-icon" href="/assets/images/icons/icon-192x192.png">
+
+		<link rel="manifest" href="/assets/manifest.webmanifest">
+		<link rel="stylesheet" href="/assets/css/tailwind.css">
+
+		{# Facebook #}
+		<meta property="og:title" content="Alexandre Mouton-Brady">
+		<meta property="og:site_name" content="Alexandre Mouton-Brady">
+		<meta property="og:url" content="https://amoutonbrady.dev">
+		<meta property="og:description" content="Hello, World! I'm Alexandre. This is my site.">
+		<meta property="og:type" content="website">
+		<meta property="og:image" content="https://amoutonbrady.dev/assets/icons/icon-512x512.png">
+
+		{# Twitter #}
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:site" content="@wbsdgcjfhd">
+		<meta name="twitter:creator" content="@wbsdgcjfhd">
+		<meta name="twitter:url" content="https://amoutonbrady.dev">
+		<meta name="twitter:title" content="Alexandre Mouton-Brady">
+		<meta name="twitter:description" content="Hello, World! I'm Alexandre. This is my site">
+		<meta name="twitter:image" content="https://amoutonbrady.dev/assets/icons/icon-512x512.png">
+		<meta name="twitter:image:alt" content="A house">
 	</head>
 	<body>
+		<main>
+			{% block content %}{% endblock %}
+		</main>
+		
+		<footer>
+			<div class="absolute bottom-0 right-0 m-4 text-gray-500">
+				<a target="_blank" href="https://icons8.com/icons/set/home--v2" class="text-gray-400">Home icon</a> icon by <a target="_blank" href="https://icons8.com" class="text-gray-400">Icons8</a>
+			</div>
+		</footer>
 
-		{% block content %}{% endblock %}
-
-		<footer>Hello footer!</footer>
+		<script>
+			// Check that service workers are supported
+			if ('serviceWorker' in navigator) {
+				// Use the window load event to keep the page load performant
+				window.addEventListener('load', () => {
+					navigator.serviceWorker.register('/assets/js/sw.js');
+				});
+			}
+		</script>
 	</body>
 </html>

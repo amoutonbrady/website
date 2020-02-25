@@ -4,6 +4,7 @@ import * as shiki from 'shiki';
 import njk from 'nunjucks';
 import matter from 'gray-matter';
 import { minify } from 'html-minifier';
+import workbox from 'workbox-build';
 
 // Logging stuff
 import log from 'consola';
@@ -269,6 +270,37 @@ async function processAndCopyAssets() {
 	}
 }
 
+// https://developers.google.com/web/tools/workbox/guides/generate-service-worker/workbox-build
+async function generateSW() {
+	// This will return a Promise
+	return workbox.generateSW({
+		globDirectory: 'dist',
+		globPatterns: ['**/*.{html,json,js,css}'],
+		swDest: 'dist/assets/js/sw.js',
+
+		// Define runtime caching rules.
+		runtimeCaching: [
+			{
+				// Match any request that ends with .png, .jpg, .jpeg or .svg.
+				urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+
+				// Apply a cache-first strategy.
+				handler: 'CacheFirst',
+
+				options: {
+					// Use a custom cache name.
+					cacheName: 'images',
+
+					// Only cache 10 images.
+					expiration: {
+						maxEntries: 10,
+					},
+				},
+			},
+		],
+	});
+}
+
 async function main() {
 	log.info('Starting the whole thing');
 
@@ -314,6 +346,10 @@ async function main() {
 	// Process and mirror the assets directory to the dist folder
 	await processAndCopyAssets();
 	loader.succeed('All assets processed successfully');
+
+	loader.start('Generating service worker...');
+	await generateSW();
+	loader.succeed('Service worker generated successfully');
 
 	log.success(`Build successful!`);
 }

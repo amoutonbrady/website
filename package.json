@@ -34,7 +34,8 @@
 		"postcss": "^7.0.27",
 		"shiki": "^0.1.6",
 		"tailwindcss": "^1.2.0",
-		"terser": "^4.6.4"
+		"terser": "^4.6.4",
+		"workbox-build": "^5.0.0"
 	},
 	"devDependencies": {
 		"prettier": "^1.19.1",
