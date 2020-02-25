@@ -2,6 +2,8 @@
 
 Minimal, experimental & opinionated static blog generator
 
+![PWA score 100%](.github/pwa.jpg)
+
 ## Installation
 
 ```bash
@@ -11,7 +13,15 @@ yarn
 
 ## Building
 
+### Build command
+
 `yarn build`
+
+### Build process
+
+The build will automatically create a dist folder with everything routed for a static host.
+
+Additionnally, it will also provide a service worker to make the website work offline and please the search engine with an **okay-ish** Lighthouse score.
 
 ## Architecture
 
