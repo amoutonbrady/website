@@ -41,7 +41,7 @@
 		
 		<footer>
 			<div class="absolute bottom-0 right-0 m-4 text-sm text-gray-500">
-				<a rel="noopener" target="_blank" href="https://icons8.com/icons/set/home--v2" class="text-gray-400">Home icon</a> icon by <a target="_blank" href="https://icons8.com" class="text-gray-400">Icons8</a>
+				<a rel="noopener" target="_blank" href="https://icons8.com/icons/set/home--v2" class="text-gray-400">Home icon</a> icon by <a rel="noopener" target="_blank" href="https://icons8.com" class="text-gray-400">Icons8</a>
 			</div>
 		</footer>
 
@@ -50,7 +50,7 @@
 			if ('serviceWorker' in navigator) {
 				// Use the window load event to keep the page load performant
 				window.addEventListener('load', () => {
-					navigator.serviceWorker.register('/assets/js/sw.js');
+					navigator.serviceWorker.register('sw.js');
 				});
 			}
 		</script>

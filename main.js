@@ -267,20 +267,9 @@ async function generateSW() {
 	// This will return a Promise
 	return workbox.generateSW({
 		globDirectory: 'dist',
-		globPatterns: ['**/*.{html,json,js,css}'],
-		swDest: 'dist/assets/js/sw.js',
+		globPatterns: ['**/*.{html,json,webmanifest,js,css}'],
+		swDest: 'dist/sw.js',
 		mode: 'production',
-		manifestTransforms: [
-			async entries => {
-				const manifest = entries.map(entry => {
-					entry.url = '/' + entry.url;
-					return entry;
-				});
-
-				return { manifest, warnings: [] };
-			},
-		],
-
 		// Define runtime caching rules.
 		runtimeCaching: [
 			{
