@@ -18,16 +18,18 @@ yarn
 ```
 ├───assets
 ├───layouts
+├───pages
 └───posts
 ```
 
 -   `assets`: contains all the images (we don't care about CSS or JS)
 -   `layouts`: contains the layouts, see the different layouts below
+-   `pages`: each html file will represent a page (eg: blog.html will turn into /blog/index.html). The `posts` param will be auto-injected
 -   `posts`: contains your posts content. The title of the file will be the slug
 
 ## Layouts
 
-All layout file have to in the `layouts` folder.
+All layout file have to be in the `layouts` folder.
 
 Layouts are just [nunjucks](https://mozilla.github.io/) templates.
 
@@ -42,6 +44,14 @@ List of supported template files:
 -   `post.html`
 
 More to come as the project needs it.
+
+## Config
+
+If a `config.js` is at the root of the directory, it will be resolved and used.
+
+Its needs to default export a configuration object.
+
+For the moment only the `filters` key work. It is an array of filters for njk templates.
 
 ## Technical details
 
