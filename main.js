@@ -1,5 +1,5 @@
 import marked from 'marked';
-import { resolve, join } from 'path';
+import { resolve, join, extname } from 'path';
 import * as shiki from 'shiki';
 import njk from 'nunjucks';
 import matter from 'gray-matter';
@@ -11,17 +11,30 @@ import {
 	exists,
 	mkdirp,
 	remove,
+	statSync,
 	copy,
 	outputFile,
 	readFileSync,
+	readdirSync,
 	stat,
+	move,
 } from 'fs-extra';
 
+// CSS processing
+import postcss from 'postcss';
+import cssnano from 'cssnano';
+import tailwind from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+import purgeCSS from '@fullhuman/postcss-purgecss';
+
+// JS processing
+import terser from 'terser';
+
 // Global env
-const njkRenderer = njk.configure(['partials']);
+const njkRenderer = njk.configure(['layouts']);
 
 // Bunch of utils
-const [postsDir, pagesDir, distDir, layoutDir, assetsDir] = [
+const [postsDir, pagesDir, distDir, layoutDir] = [
 	'posts',
 	'pages',
 	'dist',
@@ -39,6 +52,28 @@ const cssResetPath = resolve(
 	'node_modules/modern-css-reset/dist/reset.min.css',
 );
 const cssReset = readFileSync(cssResetPath, { encoding: 'utf-8' });
+
+/* Prepend the given path segment */
+const prependPathSegment = pathSegment => location =>
+	join(pathSegment, location);
+
+/* fs.readdir but with relative paths */
+const readdirPreserveRelativePath = location =>
+	readdirSync(location).map(prependPathSegment(location));
+
+/* Recursive fs.readdir but with relative paths */
+const readdirRecursive = location =>
+	readdirPreserveRelativePath(location).reduce(
+		(result, currentValue) =>
+			statSync(currentValue).isDirectory()
+				? result.concat(readdirRecursive(currentValue))
+				: result.concat(currentValue),
+		[],
+	);
+
+/*****************
+ * CORE OF THE CLI
+ *****************/
 
 async function resolveConfig(configName = 'config.js') {
 	const configPath = resolve(__dirname, configName);
@@ -180,21 +215,63 @@ async function processConfig(config) {
 	return njkRenderer;
 }
 
+async function processCSSFiles(css) {
+	const result = await postcss([
+		tailwind(),
+		autoprefixer(),
+		cssnano({ preset: 'default' }),
+		purgeCSS({
+			content: ['./dist/**/*.html'],
+			defaultExtractor: content =>
+				content.match(/[A-Za-z0-9-_:/]+/g) || [],
+		}),
+	]).process(css, { map: false, from: null });
+
+	return result.css;
+}
+
+function processJSFiles(js) {
+	return new Promise(res => void res(terser.minify(js).code));
+}
+
+async function processAndCopyAssets() {
+	const files = readdirRecursive('assets').filter(
+		file => !file.includes('.gitkeep'),
+	);
+
+	for (const filePath of files) {
+		console.log(`\nProcessing ${filePath}`);
+
+		const extension = extname(filePath);
+		const file = await readFile(filePath, { encoding: 'utf-8' });
+		let content = '';
+
+		switch (extension) {
+			case '.css':
+				content = await processCSSFiles(file);
+				break;
+			case '.js':
+				content = await processJSFiles(file);
+				break;
+			default:
+				console.log(`no transformer for file type ${extension}`);
+				move(filePath, resolveDist(filePath));
+				continue;
+		}
+
+		outputFile(resolveDist(filePath), content);
+	}
+}
+
 async function main() {
 	// Rewrite the dist folder on each compilation
 	if (await exists(distDir)) await remove(distDir);
 
-	const customConfig = await resolveConfig();
-	processConfig(customConfig);
+	const config = await resolveConfig();
+	await processConfig(config);
 
 	// Create the dist folder
 	await mkdirp(distDir);
-
-	// Copy the assets directory as is to the dist folder
-	await copy(assetsDir, resolveDist('assets'), {
-		recursive: true,
-		filter: file => !file.includes('.gitkeep'),
-	});
 
 	// Setup some highlight stuff for the markdown
 	const hl = await shiki.getHighlighter({
@@ -207,8 +284,14 @@ async function main() {
 		},
 	});
 
+	// Process the posts folder
 	const posts = await generatePosts();
+
+	// Process the pages folder
 	await generateRoutes(posts);
+
+	// Process and mirror the assets directory to the dist folder
+	await processAndCopyAssets();
 }
 
 // Start the small compiler

@@ -49,9 +49,9 @@ You can see this project as a very tiny little micro compiler that just scan tem
 
 ## TODO
 
--   [ ] Moare layouts (specifically index with list of posts)
--   [ ] Process assets
+-   [x] ~~Moare layouts (specifically index with list of posts)~~ Implemented as "pages"
+-   [x] ~~Process assets~~ Only for JS (minification) & CSS (dead code removal, minification, autoprefixer, tailwind)
 -   [ ] Mess around with typescript maybe
--   [ ] Make it agnostic and configurable maybe
+-   [x] ~~Make it agnostic and configurable maybe~~ Sort of implemented it (only njk filters for now)
 -   [ ] Add feedback on the CLI
--   [ ] Add a develop mode maybe
+-   [x] ~~Add a develop mode maybe~~ Add a "serve" command to serve the dist, still to build manually for now
