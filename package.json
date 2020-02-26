@@ -14,7 +14,7 @@
 		"serve": "serve dist"
 	},
 	"devDependencies": {
-		"@amoutonbrady/sbg": "^0.1.0",
+		"@amoutonbrady/sbg": "^0.1.2",
 		"serve": "^11.3.0"
 	}
 }
