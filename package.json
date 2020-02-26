@@ -1,43 +1,20 @@
 {
-	"version": "0.0.1",
-	"name": "@amoutonbrady/ssb",
-	"description": "Minimal, experimental & opinionated static blog generator",
-	"main": "main.js",
+	"name": "@amoutonbrady/website",
+	"description": "Random website",
 	"author": {
 		"email": "amoutonbrady@gmail.com",
 		"name": "Alexandre Mouton-Brady",
 		"url": "https://amoutonbrady.dev"
 	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/amoutonbrady/sbg"
-	},
+	"repository": "https://github.com/amoutonbrady/website",
 	"readme": "README.md",
 	"license": "MIT",
 	"scripts": {
-		"build": "node -r esm main",
+		"build": "sbg",
 		"serve": "serve dist"
 	},
-	"dependencies": {
-		"@fullhuman/postcss-purgecss": "^2.0.6",
-		"autoprefixer": "^9.7.4",
-		"consola": "^2.11.3",
-		"cssnano": "^4.1.10",
-		"esm": "^3.2.25",
-		"fs-extra": "^8.1.0",
-		"gray-matter": "^4.0.2",
-		"html-minifier": "^4.0.0",
-		"marked": "^0.8.0",
-		"nunjucks": "^3.2.0",
-		"ora": "^4.0.3",
-		"postcss": "^7.0.27",
-		"shiki": "^0.1.6",
-		"tailwindcss": "^1.2.0",
-		"terser": "^4.6.4",
-		"workbox-build": "^5.0.0"
-	},
 	"devDependencies": {
-		"prettier": "^1.19.1",
+		"@amoutonbrady/sbg": "^0.1.0",
 		"serve": "^11.3.0"
 	}
 }
